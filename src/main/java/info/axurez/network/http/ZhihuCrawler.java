@@ -1,4 +1,4 @@
-package info.axurez.network;
+package info.axurez.network.http;
 
 /**
  * Created by lluvi on 2016/2/2.
@@ -8,7 +8,7 @@ interface ProcessContent {
 
 }
 
-public class ZhihuCrawler extends Crawl {
+public class ZhihuCrawler extends AsyncHttpClientCrawler {
 
 
 

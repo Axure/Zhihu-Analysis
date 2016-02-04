@@ -1,10 +1,14 @@
-package info.axurez.network;
+package info.axurez.network.http;
 
 import com.ui4j.api.browser.BrowserEngine;
 import com.ui4j.api.browser.BrowserFactory;
 import com.ui4j.api.browser.Page;
 
-public class Crawler {
+public interface Crawler {
+
+}
+
+class What {
     public static void main(String[] args) {
         // get the instance of the webkit
         BrowserEngine browser = BrowserFactory.getWebKit();

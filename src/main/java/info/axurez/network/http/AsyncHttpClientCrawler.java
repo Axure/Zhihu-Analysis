@@ -1,10 +1,9 @@
-package info.axurez.network;
+package info.axurez.network.http;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ning.http.client.*;
-import sun.rmi.runtime.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.util.concurrent.Future;
@@ -57,10 +56,13 @@ class HttpRequestInfo {
     }
 }
 
-public class Crawl {
+/**
+ * TODO: Our crawler should be independent of the http implementations. So we need a proxy or wrapper or adapter.
+ */
+public class AsyncHttpClientCrawler implements Crawler {
     Logger logger;
-    public Crawl() {
-        logger = LoggerFactory.getLogger(Crawl.class);
+    public AsyncHttpClientCrawler() {
+        logger = LoggerFactory.getLogger(AsyncHttpClientCrawler.class);
     }
 
     public String getContent(String url) {

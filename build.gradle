@@ -11,6 +11,8 @@ repositories {
 }
 
 dependencies {
+    compile group: 'org.springframework', name: 'spring-context', version: '4.2.4.RELEASE'
+
     compile group: 'org.hibernate', name: 'hibernate', version: '3.5.4-Final'
     compile group: 'org.hibernate', name: 'hibernate-core', version: '5.0.7.Final'
     compile group: 'org.hibernate', name: 'hibernate-entitymanager', version: '5.0.7.Final'
