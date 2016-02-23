@@ -3,9 +3,11 @@ package info.axurez.network.http;
 import com.ui4j.api.browser.BrowserEngine;
 import com.ui4j.api.browser.BrowserFactory;
 import com.ui4j.api.browser.Page;
+import org.slf4j.Logger;
 
 public interface Crawler {
-
+    Logger getLogger();
+    void setLogger(Logger logger);
 }
 
 class What {

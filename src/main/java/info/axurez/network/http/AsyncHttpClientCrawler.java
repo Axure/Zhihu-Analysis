@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ning.http.client.*;
+import org.slf4j.helpers.NOPLogger;
 
 import java.io.ByteArrayOutputStream;
 import java.util.concurrent.Future;
@@ -60,9 +61,24 @@ class HttpRequestInfo {
  * TODO: Our crawler should be independent of the http implementations. So we need a proxy or wrapper or adapter.
  */
 public class AsyncHttpClientCrawler implements Crawler {
-    Logger logger;
+    protected Logger logger;
+
+    @Override
+    public Logger getLogger() {
+        return this.logger;
+    }
+
+    @Override
+    public void setLogger(Logger logger) {
+        this.logger = logger;
+    }
+
     public AsyncHttpClientCrawler() {
         logger = LoggerFactory.getLogger(AsyncHttpClientCrawler.class);
+    }
+
+    public AsyncHttpClientCrawler(Logger logger) {
+        this.logger = logger;
     }
 
     public String getContent(String url) {
@@ -128,8 +144,12 @@ public class AsyncHttpClientCrawler implements Crawler {
                     }
                 });
                 httpRequestInfo = f.get();
+                if (httpRequestInfo.redirect() == REDIRECT.YES) {
+                    logger.warn("Redirection happening! May decrease performance!");
+                }
             }
             stringBuilder.append(httpRequestInfo.getContent());
+            asyncHttpClient.close();
         } catch (Exception ex) {
             ex.printStackTrace();
         }

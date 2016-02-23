@@ -1,4 +1,4 @@
-package info.axurez.test;
+package info.axurez.attempt;
 import info.axurez.network.http.ZhihuCrawler;
 
 /**
@@ -8,7 +8,7 @@ public class ZhihuCrawlerTest {
     public static void main(String args[]) {
         System.out.println("Starting!");
         ZhihuCrawler zhihuCrawler = new ZhihuCrawler();
-        String result = zhihuCrawler.getAnswer("39357642", "81144987");
+        String result = zhihuCrawler.getAnswerHtml("39357642", "81144987");
         System.out.println(result);
         System.out.println("Ending!");
     }
