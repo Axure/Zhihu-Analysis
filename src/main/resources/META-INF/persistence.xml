@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+             version="2.0">
+
+<persistence-unit name="info.axurez.zhihu" transaction-type="RESOURCE_LOCAL">
+    <provider>org.hibernate.ejb.HibernatePersistence</provider>
+    <class>info.axurez.database.entities.User</class>
+    <class>info.axurez.database.entities.RequestLog</class>
+    <properties>
+        <property name="hibernate.ejb.cfgfile" value="hibernate.cfg.xml" g/>
+        <!--<property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>-->
+        <property name="javax.persistence.schema-generation.scripts.action" value="drop-and-create"/>
+        <property name="javax.persistence.schema-generation.scripts.create-target" value="createTables.ddl"/>
+        <property name="javax.persistence.schema-generation.scripts.drop-target" value="dropTables.ddl"/>
+        <property name="javax.persistence.sql-load-script-source" value="insert.sql"/>
+    </properties>
+</persistence-unit>
+</persistence>

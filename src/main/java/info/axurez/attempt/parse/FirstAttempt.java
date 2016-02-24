@@ -5,6 +5,8 @@ import javax.xml.parsers.*;
 import info.axurez.network.http.ZhihuCrawler;
 import javafx.util.Pair;
 import org.ccil.cowan.tagsoup.jaxp.SAXParserImpl;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.xml.sax.*;
 import org.xml.sax.helpers.*;
 
@@ -29,10 +31,12 @@ public class FirstAttempt {
             new StringReader("<a>" +
                 "?<b>c</b><c><d>f</d>fs</c>" +
                 "</a>")));
-        ZhihuCrawler crawler = new ZhihuCrawler();
+        ApplicationContext context = new ClassPathXmlApplicationContext("application-context.xml");
+        ZhihuCrawler crawler = context.getBean("zhihuCrawler", ZhihuCrawler.class);
         String result = crawler.getQuestionHtml("28943259");
         SAXParserImpl.newInstance(null).parse(new InputSource(
             new StringReader(result)), new MyXmlHandler());
+        ((ClassPathXmlApplicationContext) context).close();
     }
 
 }

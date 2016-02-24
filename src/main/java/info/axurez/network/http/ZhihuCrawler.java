@@ -3,6 +3,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.NOPLogger;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+
 /**
  * Created by lluvi on 2016/2/2.
  */
@@ -11,6 +15,9 @@ interface ProcessContent {
 
 }
 
+/**
+ * TODO: dependency injection.
+ */
 public class ZhihuCrawler extends AsyncHttpClientCrawler {
 
     private String QUESTION_PREFIX = "http://zhihu.com/question/";

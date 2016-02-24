@@ -6,8 +6,21 @@
 
     <bean id="zhihuCrawler"
           class="info.axurez.network.http.ZhihuCrawler">
-        <!--<property name="message" value="Spring is fun." />-->
+        <property name="entityManager" ref="entityManager"/>
     </bean>
 
+    <bean id="entityManagerFactory"
+          class="javax.persistence.Persistence"
+          factory-method="createEntityManagerFactory"
+          destroy-method="close">
+        <constructor-arg value="info.axurez.zhihu"/>
+    </bean>
+
+    <bean id="entityManager"
+          factory-bean="entityManagerFactory"
+          factory-method="createEntityManager"
+          destroy-method="close">
+
+    </bean>
 
 </beans>

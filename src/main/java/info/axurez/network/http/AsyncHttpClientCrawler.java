@@ -1,12 +1,13 @@
 package info.axurez.network.http;
 
+import info.axurez.database.entities.RequestLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.ning.http.client.*;
-import org.slf4j.helpers.NOPLogger;
 
+import javax.persistence.EntityManager;
 import java.io.ByteArrayOutputStream;
+import java.util.Date;
 import java.util.concurrent.Future;
 
 /**
@@ -63,6 +64,16 @@ class HttpRequestInfo {
 public class AsyncHttpClientCrawler implements Crawler {
     protected Logger logger;
 
+    public EntityManager getEntityManager() {
+        return entityManager;
+    }
+
+    public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
+
+    protected EntityManager entityManager;
+
     @Override
     public Logger getLogger() {
         return this.logger;
@@ -82,67 +93,72 @@ public class AsyncHttpClientCrawler implements Crawler {
     }
 
     public String getContent(String url) {
+        entityManager.getTransaction().begin();
         StringBuilder stringBuilder = new StringBuilder();
         try {
             AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
             HttpRequestInfo httpRequestInfo = new HttpRequestInfo(REDIRECT.YES, url);
             while (httpRequestInfo.redirect() == REDIRECT.YES) {
-                logger.info("Requesting " + httpRequestInfo.getUrl());
-                Future<HttpRequestInfo> f = asyncHttpClient.prepareGet(httpRequestInfo.getUrl()).execute(new AsyncHandler<HttpRequestInfo>() {
-                    private ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                    private REDIRECT needsRedirect = REDIRECT.NO;
-                    private String redirectUrl;
+                String requestUrl = httpRequestInfo.getUrl();
+                logger.info("Requesting " + requestUrl);
+                entityManager.persist(new RequestLog(requestUrl, new Date()));
+                Future<HttpRequestInfo> f = asyncHttpClient
+                    .prepareGet(requestUrl)
+                    .execute(new AsyncHandler<HttpRequestInfo>() {
+                        private ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                        private REDIRECT needsRedirect = REDIRECT.NO;
+                        private String redirectUrl;
 
-                    @Override
-                    public STATE onStatusReceived(HttpResponseStatus status) throws Exception {
-                        int statusCode = status.getStatusCode();
-                        // The Status have been read
-                        // If you don't want to read the headers,body or stop processing the response
-                        if (statusCode >= 500) {
-                            return STATE.ABORT;
+                        @Override
+                        public STATE onStatusReceived(HttpResponseStatus status) throws Exception {
+                            int statusCode = status.getStatusCode();
+                            // The Status have been read
+                            // If you don't want to read the headers,body or stop processing the response
+                            if (statusCode >= 500) {
+                                return STATE.ABORT;
+                            }
+                            if (statusCode == 301 || statusCode == 302) {
+                                needsRedirect = REDIRECT.YES;
+                            }
+                            return STATE.CONTINUE;
                         }
-                        if (statusCode == 301 || statusCode == 302) {
-                            needsRedirect = REDIRECT.YES;
+
+                        @Override
+                        public STATE onHeadersReceived(HttpResponseHeaders h) throws Exception {
+                            // The headers have been read
+                            if (needsRedirect == REDIRECT.YES) {
+                                FluentCaseInsensitiveStringsMap headers = h.getHeaders();
+                                redirectUrl = headers.get("Location").get(0);
+                                return STATE.ABORT;
+                            }
+                            return STATE.CONTINUE;
                         }
-                        return STATE.CONTINUE;
-                    }
 
-                    @Override
-                    public STATE onHeadersReceived(HttpResponseHeaders h) throws Exception {
-                        // The headers have been read
-                        if (needsRedirect == REDIRECT.YES) {
-                            FluentCaseInsensitiveStringsMap headers = h.getHeaders();
-                            redirectUrl = headers.get("Location").get(0);
-                            return STATE.ABORT;
+                        @Override
+                        public STATE onBodyPartReceived(HttpResponseBodyPart bodyPart) throws Exception {
+                            bytes.write(bodyPart.getBodyPartBytes());
+                            return STATE.CONTINUE;
                         }
-                        return STATE.CONTINUE;
-                    }
 
-                    @Override
-                    public STATE onBodyPartReceived(HttpResponseBodyPart bodyPart) throws Exception {
-                        bytes.write(bodyPart.getBodyPartBytes());
-                        return STATE.CONTINUE;
-                    }
-
-                    @Override
-                    public HttpRequestInfo onCompleted() throws Exception {
-                        // Will be invoked once the response has been fully read or a ResponseComplete exception
-                        // has been thrown.
-                        // NOTE: should probably use Content-Encoding from headers
-                        HttpRequestInfo result;
-                        if (needsRedirect == REDIRECT.NO) {
-                            result = new HttpRequestInfo(REDIRECT.NO, bytes.toString("UTF-8"));
+                        @Override
+                        public HttpRequestInfo onCompleted() throws Exception {
+                            // Will be invoked once the response has been fully read or a ResponseComplete exception
+                            // has been thrown.
+                            // NOTE: should probably use Content-Encoding from headers
+                            HttpRequestInfo result;
+                            if (needsRedirect == REDIRECT.NO) {
+                                result = new HttpRequestInfo(REDIRECT.NO, bytes.toString("UTF-8"));
+                                return result;
+                            } else {
+                                result = new HttpRequestInfo(REDIRECT.YES, redirectUrl);
+                            }
                             return result;
-                        } else {
-                            result = new HttpRequestInfo(REDIRECT.YES, redirectUrl);
                         }
-                        return result;
-                    }
 
-                    @Override
-                    public void onThrowable(Throwable t) {
-                    }
-                });
+                        @Override
+                        public void onThrowable(Throwable t) {
+                        }
+                    });
                 httpRequestInfo = f.get();
                 if (httpRequestInfo.redirect() == REDIRECT.YES) {
                     logger.warn("Redirection happening! May decrease performance!");
@@ -153,6 +169,7 @@ public class AsyncHttpClientCrawler implements Crawler {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+        entityManager.getTransaction().commit();
         return stringBuilder.toString();
     }
 }
