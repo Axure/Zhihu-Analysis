@@ -1,4 +1,4 @@
-package info.axurez.network.facade;
+package info.axurez.facade.network;
 
 import java.util.concurrent.Future;
 

@@ -1,11 +1,12 @@
 package info.axurez.attempt.parse;
+
 import javax.xml.parsers.*;
 
 import info.axurez.network.http.ZhihuCrawler;
+import javafx.util.Pair;
 import org.ccil.cowan.tagsoup.jaxp.SAXParserImpl;
 import org.xml.sax.*;
 import org.xml.sax.helpers.*;
-import org.ccil.cowan.tagsoup.*;
 
 import java.util.*;
 import java.io.*;
@@ -16,12 +17,11 @@ import java.io.*;
 /**
  *
  */
-public class FirstAttempt  {
+public class FirstAttempt {
     static public void main(String[] args) throws Exception {
         SAXParserFactory spf = SAXParserFactory.newInstance();
         spf.setNamespaceAware(true);
         SAXParser saxParser = spf.newSAXParser();
-
         XMLReader xmlReader = saxParser.getXMLReader();
         xmlReader.setErrorHandler(new MyErrorHandler(System.err));
         xmlReader.setContentHandler(new MyXmlHandler());
@@ -31,21 +31,24 @@ public class FirstAttempt  {
                 "</a>")));
         ZhihuCrawler crawler = new ZhihuCrawler();
         String result = crawler.getQuestionHtml("28943259");
-//        xmlReader.parse(new InputSource(
-//            new StringReader(result)));
         SAXParserImpl.newInstance(null).parse(new InputSource(
             new StringReader(result)), new MyXmlHandler());
     }
 
-
 }
 
 class MyXmlHandler extends DefaultHandler {
-    private Hashtable tags;
+    private Hashtable<String, Integer> tagCount;
+    private Hashtable<String, Integer> tagPointer;
+    private StringBuilder currentText;
+    private Hashtable<Pair<String, Integer>, ArrayList<String>> innerTexts;
 
     @Override
     public void startDocument() throws SAXException {
-        tags = new Hashtable();
+        tagCount = new Hashtable<>();
+        tagPointer = new Hashtable<>();
+        currentText = new StringBuilder();
+        innerTexts = new Hashtable<>();
     }
 
     @Override
@@ -54,28 +57,79 @@ class MyXmlHandler extends DefaultHandler {
                              String qName,
                              Attributes atts)
         throws SAXException {
-
-        String key = localName;
-        Object value = tags.get(key);
-
-        if (value == null) {
-            tags.put(key, new Integer(1));
-        }
-        else {
-            int count = ((Integer)value).intValue();
+        /**
+         * Get the tag name.
+         */
+        String tagName = localName;
+        Object countObject = this.tagCount.get(tagName);
+        /**
+         *
+         */
+        if (countObject == null) {
+            this.tagCount.put(tagName, 1);
+        } else {
+            int count = ((Integer) countObject).intValue();
             count++;
-            tags.put(key, new Integer(count));
+            this.tagCount.put(tagName, new Integer(count));
         }
+        /**
+         * Put that count into the tag pointer.
+         */
+        Integer count = this.tagCount.get(tagName);
+        tagPointer.put(tagName, new Integer(count));
+        /**
+         *
+         */
+    }
+
+    @Override
+    public void characters(char ch[], int start, int length) throws SAXException {
+        currentText.append(ch, start, length);
+    }
+
+    @Override
+    public void endElement(String uri, String localName, String qName)
+        throws SAXException {
+        /**
+         * Get the basic information.
+         */
+        String tagName = localName;
+        Integer pointer = tagPointer.get(tagName);
+        /**
+         * Create the node and find the contents under that key.
+         */
+        Pair<String, Integer> node = new Pair<>(tagName, pointer);
+        Object textObject = innerTexts.get(node);
+        if (textObject == null) {
+            innerTexts.put(node, new ArrayList<>());
+        }
+        innerTexts.get(node).add(currentText.toString());
+        /**
+         *
+         */
+        currentText.setLength(0);
+        tagPointer.put(tagName, pointer - 1);
     }
 
     @Override
     public void endDocument() throws SAXException {
-        Enumeration e = tags.keys();
+        Enumeration e = tagCount.keys();
         while (e.hasMoreElements()) {
-            String tag = (String)e.nextElement();
-            int count = ((Integer)tags.get(tag)).intValue();
+            String tag = (String) e.nextElement();
+            int count = ((Integer) tagCount.get(tag)).intValue();
             System.out.println("Local Name \"" + tag + "\" occurs "
                 + count + " times");
+        }
+
+        e = innerTexts.keys();
+        while (e.hasMoreElements()) {
+            Pair<String, Integer> countedTag = (Pair<String, Integer>) e.nextElement();
+            ArrayList<String> innerText = (ArrayList<String>) innerTexts.get(countedTag);
+            System.out.printf("%dth <%s>: ", countedTag.getValue(), countedTag.getKey());
+            for (String text: innerText) {
+                System.out.printf("%s, ", text);
+            }
+            System.out.println();
         }
     }
 }
@@ -89,14 +143,11 @@ class MyErrorHandler implements ErrorHandler {
 
     private String getParseExceptionInfo(SAXParseException spe) {
         String systemId = spe.getSystemId();
-
         if (systemId == null) {
             systemId = "null";
         }
-
         String info = "URI=" + systemId + " Line="
             + spe.getLineNumber() + ": " + spe.getMessage();
-
         return info;
     }
 

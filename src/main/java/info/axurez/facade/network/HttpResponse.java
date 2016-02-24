@@ -1,4 +1,4 @@
-package info.axurez.network.facade;
+package info.axurez.facade.network;
 
 /**
  * Created by axurez on 2016/2/4.
