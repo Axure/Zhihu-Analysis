@@ -1,4 +1,4 @@
-package info.axurez.attempt;
+package info.axurez.attempt.crawl;
 
 import info.axurez.network.http.ZhihuCrawler;
 import org.slf4j.Logger;
