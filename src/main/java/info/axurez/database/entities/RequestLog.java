@@ -20,8 +20,32 @@ public class RequestLog {
     @Column
     private Date time;
 
+    public RequestLog() {
+
+    }
+
     public RequestLog(String url, Date time) {
         this.url = url;
+        this.time = time;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
         this.time = time;
     }
 }

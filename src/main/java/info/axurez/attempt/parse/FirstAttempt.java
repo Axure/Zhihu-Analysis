@@ -21,7 +21,15 @@ import java.io.*;
  */
 public class FirstAttempt {
     static public void main(String[] args) throws Exception {
-        SAXParserFactory spf = SAXParserFactory.newInstance();
+        /**
+         * Get the application context.
+         */
+        ApplicationContext context = new ClassPathXmlApplicationContext("application-context.xml");
+        /**
+         *
+         */
+        SAXParserFactory spf = context.getBean("saxParserFactory", SAXParserFactory.class);
+//        SAXParserFactory spf = SAXParserFactory.newInstance();
         spf.setNamespaceAware(true);
         SAXParser saxParser = spf.newSAXParser();
         XMLReader xmlReader = saxParser.getXMLReader();
@@ -31,7 +39,6 @@ public class FirstAttempt {
             new StringReader("<a>" +
                 "?<b>c</b><c><d>f</d>fs</c>" +
                 "</a>")));
-        ApplicationContext context = new ClassPathXmlApplicationContext("application-context.xml");
         ZhihuCrawler crawler = context.getBean("zhihuCrawler", ZhihuCrawler.class);
         String result = crawler.getQuestionHtml("28943259");
         SAXParserImpl.newInstance(null).parse(new InputSource(

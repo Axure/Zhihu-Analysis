@@ -92,11 +92,15 @@ public class AsyncHttpClientCrawler implements Crawler {
         this.logger = logger;
     }
 
+    public Future<String> getContentAsync(String url) {
+
+    }
+
     public String getContent(String url) {
-        entityManager.getTransaction().begin();
         StringBuilder stringBuilder = new StringBuilder();
         try {
-            AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
+            entityManager.getTransaction().begin();
+            AsyncHttpClient asyncHttpClient = new AsyncHttpClient(); // TODO: DI.
             HttpRequestInfo httpRequestInfo = new HttpRequestInfo(REDIRECT.YES, url);
             while (httpRequestInfo.redirect() == REDIRECT.YES) {
                 String requestUrl = httpRequestInfo.getUrl();
@@ -166,10 +170,10 @@ public class AsyncHttpClientCrawler implements Crawler {
             }
             stringBuilder.append(httpRequestInfo.getContent());
             asyncHttpClient.close();
+            entityManager.getTransaction().commit();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        entityManager.getTransaction().commit();
         return stringBuilder.toString();
     }
 }

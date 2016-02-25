@@ -8,8 +8,9 @@
     <provider>org.hibernate.ejb.HibernatePersistence</provider>
     <class>info.axurez.database.entities.User</class>
     <class>info.axurez.database.entities.RequestLog</class>
+    <class>info.axurez.database.entities.Question</class>
     <properties>
-        <property name="hibernate.ejb.cfgfile" value="hibernate.cfg.xml" g/>
+        <property name="hibernate.ejb.cfgfile" value="hibernate.cfg.xml" />
         <!--<property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>-->
         <property name="javax.persistence.schema-generation.scripts.action" value="drop-and-create"/>
         <property name="javax.persistence.schema-generation.scripts.create-target" value="createTables.ddl"/>

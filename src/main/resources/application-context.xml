@@ -4,6 +4,32 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
 	   					   http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+    <bean id="saxParserFactory"
+          class="javax.xml.parsers.SAXParserFactory"
+          factory-method="newInstance">
+
+    </bean>
+
+    <bean id="saxParser"
+          factory-bean="saxParserFactory"
+          factory-method="newSAXParser">
+
+    </bean>
+
+    <bean id="xmlReader"
+          factory-bean="saxParser"
+          factory-method="getXMLReader">
+
+    </bean>
+
+    <bean id="saxParserInstance"
+          class="org.ccil.cowan.tagsoup.jaxp.SAXParserImpl"
+          factory-method="newInstance">
+        <constructor-arg index="0" name="features">
+            <null/>
+        </constructor-arg>
+    </bean>
+
     <bean id="zhihuCrawler"
           class="info.axurez.network.http.ZhihuCrawler">
         <property name="entityManager" ref="entityManager"/>

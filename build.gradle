@@ -29,6 +29,7 @@ dependencies {
     compile group: 'com.ui4j', name: 'ui4j-all', version: '2.1.0'
 
     compile group: 'org.ccil.cowan.tagsoup', name: 'tagsoup', version: '1.2.1'
+    compile group: 'org.jsoup', name: 'jsoup', version: '1.8.3'
 
 
 
