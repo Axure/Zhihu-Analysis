@@ -9,6 +9,8 @@
     <class>info.axurez.database.entities.User</class>
     <class>info.axurez.database.entities.RequestLog</class>
     <class>info.axurez.database.entities.Question</class>
+    <class>info.axurez.database.entities.Topic</class>
+    <class>info.axurez.database.entities.Answer</class>
     <properties>
         <property name="hibernate.ejb.cfgfile" value="hibernate.cfg.xml" />
         <!--<property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>-->

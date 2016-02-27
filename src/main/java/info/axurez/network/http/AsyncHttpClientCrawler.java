@@ -8,7 +8,10 @@ import com.ning.http.client.*;
 import javax.persistence.EntityManager;
 import java.io.ByteArrayOutputStream;
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Created by axurez on 2016/2/2.
@@ -93,7 +96,34 @@ public class AsyncHttpClientCrawler implements Crawler {
     }
 
     public Future<String> getContentAsync(String url) {
+        Future<String> future = new Future<String>() {
+            @Override
+            public boolean cancel(boolean mayInterruptIfRunning) {
+                return false;
+            }
 
+            @Override
+            public boolean isCancelled() {
+                return false;
+            }
+
+            @Override
+            public boolean isDone() {
+                return false;
+            }
+
+            @Override
+            public String get() throws InterruptedException, ExecutionException {
+                return null;
+            }
+
+            @Override
+            public String get(long timeout, TimeUnit unit)
+                throws InterruptedException, ExecutionException, TimeoutException {
+                return null;
+            }
+        };
+        return future;
     }
 
     public String getContent(String url) {

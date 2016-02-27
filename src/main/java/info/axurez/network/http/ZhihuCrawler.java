@@ -20,7 +20,7 @@ interface ProcessContent {
  */
 public class ZhihuCrawler extends AsyncHttpClientCrawler {
 
-    private String QUESTION_PREFIX = "http://zhihu.com/question/";
+    private String QUESTION_PREFIX = "http://www.zhihu.com/question/";
     private String ANSWER_INFIX = "/answer/";
 
     public ZhihuCrawler() {

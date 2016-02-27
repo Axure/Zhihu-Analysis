@@ -16,6 +16,7 @@ dependencies {
     compile group: 'org.hibernate', name: 'hibernate', version: '3.5.4-Final'
     compile group: 'org.hibernate', name: 'hibernate-core', version: '5.0.7.Final'
     compile group: 'org.hibernate', name: 'hibernate-entitymanager', version: '5.0.7.Final'
+    compile group: 'org.springframework', name: 'spring-tx', version: '4.2.5.RELEASE'
 
     compile group: 'com.ning', name: 'async-http-client', version: '1.9.33'
     compile group: 'io.netty', name: 'netty', version: 'LATEST_NETTY_3_VERSION'

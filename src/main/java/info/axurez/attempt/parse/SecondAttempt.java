@@ -79,6 +79,21 @@ class ZhihuParser {
         /**
          *
          */
+        /**
+         * Get related questions.
+         */
+        /**
+         * Get answers
+         */
+        /**
+         * Get followers
+         */
+        /**
+         * Get topics
+         */
+        /**
+         * Get related time
+         */
         return question;
     }
 }
