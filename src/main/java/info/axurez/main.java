@@ -7,11 +7,11 @@ import info.axurez.database.entities.User;
 public class main {
     public static void main(String args[]) {
         System.out.println("321");
-        User user = new User("haha");
         /**
          * Get the entity manager.
          */
 
+        User user = new User("haha");
         EntityManagerFactory entityManagerFactory = Persistence
             .createEntityManagerFactory("info.axurez.zhihu");
         EntityManager entityManager = entityManagerFactory.createEntityManager();
